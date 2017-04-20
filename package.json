@@ -1,0 +1,25 @@
+{
+  "name": "sp-pwa",
+  "version": "1.0.0",
+  "description": "Progressive Web App (PWA) support for Super Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/websage-team/sp-pwa"
+  },
+  "author": "diablohudream@gmail.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/websage-team/sp-pwa/issues"
+  },
+  "homepage": "https://github.com/websage-team/sp-pwa",
+  "dependencies": {
+    "on-build-webpack": "^0.1.0",
+    "md5-file": "^3.1.1",
+    "glob-promise": "^3.1.0",
+    "fs-promise": "^2.0.2"
+  }
+}
