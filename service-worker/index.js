@@ -65,7 +65,7 @@ function shouldHandleFetch(event) {
 function shouldRespondFromNetworkThenCache(event) {
     return (
         event.request.headers.get('Accept').indexOf('text/html') >= 0
-        || /chunk.+\.js$/.test(event.request.url)
+        // || /chunk.+\.js$/.test(event.request.url)
     )
 }
 

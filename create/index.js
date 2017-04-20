@@ -1,16 +1,20 @@
 const fs = require('fs')
+const path = require('path')
 const fsp = require('fs-promise')
 const glob = require('glob-promise')
 const md5File = require('md5-file')
 
-export default (outputPath) => {
+function create(outputPath) {
     let files = ['/']
-    let outputFile = path.resolve(outputPath, '../service-worker.js')
+    const pathSW = path.resolve(__dirname, '../service-worker/index.js')
+    const outputFile = path.resolve(outputPath, '../service-worker.js')
 
     glob(outputPath + '/**/*')
         .then(res => {
             res.forEach(function (file) {
+                // ignore directories
                 if (fs.lstatSync(file).isDirectory()) return
+                // ignore .map files
                 if (path.extname(file) === '.map') return
                 file = path.normalize(file).replace(outputPath, '').split(path.sep).join('/')
                 files.push('/client' + file)
@@ -18,7 +22,8 @@ export default (outputPath) => {
             return files
         })
         .then(() =>
-            fsp.readFile('../service-worker', { encoding: 'utf8' })
+            // fsp.readFile('../service-worker', { encoding: 'utf8' })
+            fsp.readFile(pathSW, { encoding: 'utf8' })
         )
         .then(content =>
             fsp.writeFile(
@@ -37,3 +42,5 @@ export default (outputPath) => {
             console.log('service-worker.js created')
         })
 }
+
+module.exports = create
