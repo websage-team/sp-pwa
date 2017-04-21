@@ -4,9 +4,11 @@ const fsp = require('fs-promise')
 const glob = require('glob-promise')
 const md5File = require('md5-file')
 
-function create(outputPath) {
+function create(
+    outputPath,
+    serviceWorkerJsFilePath = path.resolve(__dirname, '../service-worker/index.js')
+) {
     let files = ['/']
-    const pathSW = path.resolve(__dirname, '../service-worker/index.js')
     const outputFile = path.resolve(outputPath, '../service-worker.js')
 
     glob(outputPath + '/**/*')
@@ -23,14 +25,14 @@ function create(outputPath) {
         })
         .then(() =>
             // fsp.readFile('../service-worker', { encoding: 'utf8' })
-            fsp.readFile(pathSW, { encoding: 'utf8' })
+            fsp.readFile(serviceWorkerJsFilePath, { encoding: 'utf8' })
         )
         .then(content =>
             fsp.writeFile(
                 outputFile,
                 content.replace(
-                    /const urlsToCache = \[\]/g,
-                    'const urlsToCache = ' + JSON.stringify(files)
+                    /urlsToCache\s*=\s*\[\]/g,
+                    'urlsToCache = ' + JSON.stringify(files)
                 ),
                 'utf8'
             )
