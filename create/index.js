@@ -18,6 +18,9 @@ function create(
                 if (fs.lstatSync(file).isDirectory()) return
                 // ignore .map files
                 if (path.extname(file) === '.map') return
+                // ignore some files
+                if (path.basename(file, '.js').indexOf('critical-extra-old-ie') > -1) return
+
                 file = path.normalize(file).replace(outputPath, '').split(path.sep).join('/')
                 files.push('/client' + file)
             })
