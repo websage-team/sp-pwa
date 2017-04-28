@@ -6,12 +6,39 @@ const md5File = require('md5-file')
 
 function create(
     outputPath,
-    serviceWorkerJsFilePath = path.resolve(__dirname, '../service-worker/index.js')
+    serviceWorkerJsFilePath = path.resolve(__dirname, '../service-worker/index.js'),
+    globPattern = '/**/*',
+    globOptions = {}
 ) {
     let files = ['/']
     const outputFile = path.resolve(outputPath, '../service-worker.js')
+    const parsePattern = pattern => {
+        let first = pattern.substr(0, 1)
+        let isExclude = false
+        if (first === '!') {
+            isExclude = true
+            pattern = pattern.substr(1)
+            first = pattern.substr(0, 1)
+        }
+        return (isExclude ? '!' : '')
+            + outputPath
+            + (first !== '/' ? '/' : '')
+            + pattern
+    }
 
-    glob(outputPath + '/**/*')
+    if (typeof globPattern === 'string')
+        globPattern = parsePattern(globPattern)
+    
+    globOptions = Object.assign({
+        nosort: true
+    }, globOptions)
+
+    if(Array.isArray(globOptions.ignore))
+        globOptions.ignore.forEach((pattern, index) => {
+            globOptions.ignore[index] = parsePattern(pattern)
+        })
+
+    glob(globPattern, globOptions)
         .then(res => {
             res.forEach(function (file) {
                 // ignore directories
