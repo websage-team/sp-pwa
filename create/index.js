@@ -52,7 +52,8 @@ function create(
                 file = path.normalize(file).replace(outputPath, '').split(path.sep).join('/')
                 files.push('/client' + file)
             })
-            return files.concat(appendUrls)
+            files = files.concat(appendUrls)
+            return files
         })
         .then(() =>
             // fsp.readFile('../service-worker', { encoding: 'utf8' })
