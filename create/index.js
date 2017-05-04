@@ -8,7 +8,8 @@ function create(
     outputPath,
     serviceWorkerJsFilePath = path.resolve(__dirname, '../service-worker/index.js'),
     globPattern = '/**/*',
-    globOptions = {}
+    globOptions = {},
+    appendUrls = []
 ) {
     let files = ['/']
     const outputFile = path.resolve(outputPath, '../service-worker.js')
@@ -51,7 +52,7 @@ function create(
                 file = path.normalize(file).replace(outputPath, '').split(path.sep).join('/')
                 files.push('/client' + file)
             })
-            return files
+            return files.concat(appendUrls)
         })
         .then(() =>
             // fsp.readFile('../service-worker', { encoding: 'utf8' })
