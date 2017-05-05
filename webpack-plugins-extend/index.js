@@ -1,9 +1,12 @@
 const WebpackOnBuildPlugin = require('on-build-webpack')
 const create = require('../create/index.js')
+const parseOptions = require('../parse-options')
 
-module.exports = (outputPath, serviceWorkerJsFilePath, globPattern, globOptions, appendUrls) => {
+const extend = (...args) => {
     return new WebpackOnBuildPlugin(function (stats) {
         // After webpack build...
-        create(outputPath, serviceWorkerJsFilePath, globPattern, globOptions, appendUrls)
+        create(parseOptions(...args))
     })
 }
+
+module.exports = extend

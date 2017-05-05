@@ -3,16 +3,20 @@ const path = require('path')
 const fsp = require('fs-promise')
 const glob = require('glob-promise')
 const md5File = require('md5-file')
+const parseOptions = require('../parse-options')
 
-function create(
-    outputPath,
-    serviceWorkerJsFilePath = path.resolve(__dirname, '../service-worker/index.js'),
-    globPattern = '/**/*',
-    globOptions = {},
-    appendUrls = []
-) {
+function create(settings = {}, ...args) {
+    let options = Object.assign({
+        outputPath: process.cwd() + '/dist/public/client',
+        serviceWorkerPath: path.resolve(__dirname, '../service-worker/index.js'),
+        globPattern: '/**/*',
+        globOptions: {},
+        appendUrls: []
+    }, parseOptions(settings, ...args))
+
     let files = ['/']
-    const outputFile = path.resolve(outputPath, '../service-worker.js')
+    const outputFile = path.resolve(options.outputPath, '../service-worker.js')
+
     const parsePattern = pattern => {
         let first = pattern.substr(0, 1)
         let isExclude = false
@@ -22,19 +26,16 @@ function create(
             first = pattern.substr(0, 1)
         }
         return (isExclude ? '!' : '')
-            + outputPath
+            + options.outputPath
             + (first !== '/' ? '/' : '')
             + pattern
     }
-
-    if (typeof globPattern === 'string')
-        globPattern = parsePattern(globPattern)
-    
-    globOptions = Object.assign({
+    const globPattern = (typeof options.globPattern === 'string') ? parsePattern(options.globPattern) : options.globPattern
+    const globOptions = Object.assign({
         nosort: true
-    }, globOptions)
+    }, options.globOptions || {})
 
-    if(Array.isArray(globOptions.ignore))
+    if (Array.isArray(globOptions.ignore))
         globOptions.ignore.forEach((pattern, index) => {
             globOptions.ignore[index] = parsePattern(pattern)
         })
@@ -49,15 +50,15 @@ function create(
                 // ignore some files
                 if (path.basename(file, '.js').indexOf('critical-extra-old-ie') > -1) return
 
-                file = path.normalize(file).replace(outputPath, '').split(path.sep).join('/')
+                file = path.normalize(file).replace(options.outputPath, '').split(path.sep).join('/')
                 files.push('/client' + file)
             })
-            files = files.concat(appendUrls)
+            files = files.concat(options.appendUrls)
             return files
         })
         .then(() =>
             // fsp.readFile('../service-worker', { encoding: 'utf8' })
-            fsp.readFile(serviceWorkerJsFilePath, { encoding: 'utf8' })
+            fsp.readFile(options.serviceWorkerPath, { encoding: 'utf8' })
         )
         .then(content =>
             fsp.writeFile(
@@ -70,7 +71,7 @@ function create(
             )
         )
         .then(() =>
-            fsp.rename(outputFile, path.resolve(outputPath, `../service-worker.${md5File.sync(outputFile)}.js`))
+            fsp.rename(outputFile, path.resolve(options.outputPath, `../service-worker.${md5File.sync(outputFile)}.js`))
         )
         .then(() => {
             console.log('service-worker.js created')
