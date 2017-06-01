@@ -1,7 +1,11 @@
 export default (args) => {
+    const dirToCheck = path.resolve(args.distPathName, 'public')
     const fs = require('fs')
+
+    if(!fs.existsSync(dirToCheck)) return ''
+
     const path = require('path')
-    const files = fs.readdirSync(path.resolve(args.distPathName, 'public'))
+    const files = fs.readdirSync(dirToCheck)
 
     let fileJS
     files.forEach(f => {
