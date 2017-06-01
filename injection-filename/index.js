@@ -1,10 +1,11 @@
 export default (args) => {
-    const dirToCheck = path.resolve(args.distPathName, 'public')
+    const path = require('path')
     const fs = require('fs')
+
+    const dirToCheck = path.resolve(args.distPathName, 'public')
 
     if(!fs.existsSync(dirToCheck)) return ''
 
-    const path = require('path')
     const files = fs.readdirSync(dirToCheck)
 
     let fileJS

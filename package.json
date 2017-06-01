@@ -1,6 +1,6 @@
 {
   "name": "sp-pwa",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Progressive Web App (PWA) support for Super Project",
   "main": "webpack-plugins-extend/index.js",
   "scripts": {
