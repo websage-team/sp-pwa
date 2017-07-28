@@ -1,6 +1,6 @@
 {
   "name": "sp-pwa",
-  "version": "1.6.2",
+  "version": "2.0.0",
   "description": "Progressive Web App (PWA) support for Super Project",
   "main": "webpack-plugins-extend/index.js",
   "scripts": {
@@ -17,9 +17,13 @@
   },
   "homepage": "https://github.com/websage-team/sp-pwa",
   "dependencies": {
+    "sp-isomorphic-utils": "^1.0.0",
     "on-build-webpack": "^0.1.0",
     "md5-file": "^3.1.1",
     "glob-promise": "^3.1.0",
     "fs-promise": "^2.0.2"
+  },
+  "peerDependencies": {
+    "super-project": "1.x"
   }
 }

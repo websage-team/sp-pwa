@@ -7,15 +7,16 @@ const parseOptions = require('../parse-options')
 
 function create(settings = {}, ...args) {
     let options = Object.assign({
-        outputPath: process.cwd() + '/dist/public/client',
-        serviceWorkerPath: path.resolve(__dirname, '../service-worker/index.js'),
-        globPattern: '/**/*',
+        outputPath: process.cwd() + '/dist/public/',
+        outputFilename: 'service-worker.js',
+        customServiceWorkerPath: path.resolve(__dirname, '../service-worker/index.js'),
+        globPattern: '/client/**/*',
         globOptions: {},
         appendUrls: []
     }, parseOptions(settings, ...args))
 
     let files = ['/']
-    const outputFile = path.resolve(options.outputPath, '../service-worker.js')
+    const outputFile = path.resolve(options.outputPath, options.outputFilename)
 
     const parsePattern = pattern => {
         let first = pattern.substr(0, 1)
@@ -51,14 +52,15 @@ function create(settings = {}, ...args) {
                 if (path.basename(file, '.js').indexOf('critical-extra-old-ie') > -1) return
 
                 file = path.normalize(file).replace(options.outputPath, '').split(path.sep).join('/')
-                files.push('/client' + file)
+                // files.push('/client' + file)
+                files.push(file)
             })
             files = files.concat(options.appendUrls)
             return files
         })
         .then(() =>
             // fsp.readFile('../service-worker', { encoding: 'utf8' })
-            fsp.readFile(options.serviceWorkerPath, { encoding: 'utf8' })
+            fsp.readFile(options.customServiceWorkerPath, { encoding: 'utf8' })
         )
         .then(content =>
             fsp.writeFile(
@@ -70,9 +72,19 @@ function create(settings = {}, ...args) {
                 'utf8'
             )
         )
-        .then(() =>
-            fsp.rename(outputFile, path.resolve(options.outputPath, `../service-worker.${md5File.sync(outputFile)}.js`))
-        )
+        .then(() => {
+            const segs = options.outputFilename.split('.')
+            const ext = segs[segs.length - 1]
+            segs.pop()
+            
+            return fsp.rename(
+                outputFile,
+                path.resolve(
+                    options.outputPath,
+                    `${segs.join('.')}.${md5File.sync(outputFile)}.${ext}`
+                )
+            )
+        })
         .then(() => {
             console.log('service-worker.js created')
         })
