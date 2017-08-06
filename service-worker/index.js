@@ -59,6 +59,7 @@ function shouldHandleFetch(event) {
         event.request.method.toLowerCase() === 'get'
         && (event.request.url.indexOf(location.origin) > -1)
         && (event.request.url.indexOf('google-analytics.com') === -1)
+        && (event.request.url.indexOf(location.origin + '/api') < 0)
     )
 }
 
