@@ -9,6 +9,7 @@ function create(settings = {}, ...args) {
     let options = Object.assign({
         outputPath: process.cwd() + '/dist/public/',
         outputFilename: 'service-worker.js',
+        outputFilenameHash: false,
         customServiceWorkerPath: path.resolve(__dirname, '../service-worker/index.js'),
         globPattern: '/client/**/*',
         globOptions: {},
@@ -73,10 +74,12 @@ function create(settings = {}, ...args) {
             )
         )
         .then(() => {
+            if (!options.outputFilenameHash) return true
+
             const segs = options.outputFilename.split('.')
             const ext = segs[segs.length - 1]
             segs.pop()
-            
+
             return fsp.rename(
                 outputFile,
                 path.resolve(
