@@ -5,6 +5,19 @@ const glob = require('glob-promise')
 const md5File = require('md5-file')
 const parseOptions = require('../parse-options')
 
+/**
+ * 创建 service-worker javascript 文件
+ * 
+ * @param {Object} settings - 设置
+ * @param {string} [settings.outputPath=`${process.cwd()}/dist/public/`] - 输出文件目录
+ * @param {string} [settings.outputFilename=`service-worker.js`] - 输出文件名
+ * @param {boolean} [settings.outputFilenameHash=false] - 输出文件名中是否会加入 MD5 hash。若设为 true，输出文件名会变为 `${basename}.${md5hash}.js`
+ * @param {string} [settings.customServiceWorkerPath=path.resolve(__dirname, '../service-worker/index.js')] - service-worker 文件模板
+ * @param {string} [settings.globPattern=`/client/**//**`] - 利用 glob 初始化缓存文件列表（替换 service-worker 模板中的 urlsToCache 变量）
+ * @param {Object} [settings.globOptions={}] - glob 设置
+ * @param {Array} [settings.appendUrls=[]] - 手动追加缓存文件列表（追加到 service-worker 模板中的 urlsToCache 变量）
+ * @returns {Promise}
+ */
 function create(settings = {}, ...args) {
     let options = Object.assign({
         outputPath: process.cwd() + '/dist/public/',
@@ -42,7 +55,7 @@ function create(settings = {}, ...args) {
             globOptions.ignore[index] = parsePattern(pattern)
         })
 
-    glob(globPattern, globOptions)
+    return glob(globPattern, globOptions)
         .then(res => {
             res.forEach(function (file) {
                 // ignore directories
